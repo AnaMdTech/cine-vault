@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import { styled, useColorScheme } from "nativewind";
+import { useRouter } from "expo-router";
 import { icons } from "@/constants/icons";
 import { MovieCard } from "@/components/MovieCard";
 import { MovieDetailModal } from "@/components/MovieDetailModal";
@@ -23,6 +24,7 @@ const SafeAreaView = styled(RNSafeAreaView);
 const GENRES = ["All", "Sci-Fi", "Action", "Drama", "Animation", "Adventure"];
 
 export default function DiscoverScreen() {
+  const router = useRouter();
   const { items, addToVault, removeFromVault } = useVault();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -34,25 +36,32 @@ export default function DiscoverScreen() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
 
   // --- Filter & UI State ---
   const [selectedGenre, setSelectedGenre] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  // --- 2. Fetch Initial Page 1 (With Debounce for Search) ---
+  // --- 2. Fetch Initial Page 1 (With Debounce for Search & Error Handling) ---
   const loadInitialMovies = useCallback(async (query: string) => {
     try {
+      setError(false);
       const results = query.trim()
           ? await searchMovies(query, 1)
           : await fetchTrendingMovies(1);
 
-      setMovies(results);
-      setPage(1);
-      // TMDB returns 20 items per page; if less, we've reached the end
-      setHasMore(results.length >= 20);
-    } catch (error) {
-      console.error("Failed to load TMDB movies:", error);
+      // If TMDB returns 0 results on an empty query, flag as offline/network error
+      if (results.length === 0 && !query.trim()) {
+        setError(true);
+      } else {
+        setMovies(results);
+        setPage(1);
+        setHasMore(results.length >= 20);
+      }
+    } catch (err) {
+      console.error("Failed to load TMDB movies:", err);
+      setError(true);
     }
   }, []);
 
@@ -85,8 +94,7 @@ export default function DiscoverScreen() {
 
   // --- 4. Infinite Scroll: Load Next Page ---
   const handleLoadMore = useCallback(async () => {
-    // Guard: Do nothing if already loading, refreshing, or no more pages exist
-    if (loading || loadingMore || refreshing || !hasMore) return;
+    if (loading || loadingMore || refreshing || !hasMore || error) return;
 
     setLoadingMore(true);
     const nextPage = page + 1;
@@ -97,7 +105,6 @@ export default function DiscoverScreen() {
           : await fetchTrendingMovies(nextPage);
 
       if (newResults.length > 0) {
-        // Append new items while stripping duplicate IDs
         setMovies((prev) => {
           const existingIds = new Set(prev.map((m) => m.id));
           const uniqueNew = newResults.filter((m) => !existingIds.has(m.id));
@@ -108,12 +115,12 @@ export default function DiscoverScreen() {
       } else {
         setHasMore(false);
       }
-    } catch (error) {
-      console.error("Failed to load more movies:", error);
+    } catch (err) {
+      console.error("Failed to load more movies:", err);
     } finally {
       setLoadingMore(false);
     }
-  }, [loading, loadingMore, refreshing, hasMore, page, searchQuery]);
+  }, [loading, loadingMore, refreshing, hasMore, error, page, searchQuery]);
 
   // --- 5. Save/Remove Toggle ---
   const toggleSave = (id: string) => {
@@ -140,10 +147,44 @@ export default function DiscoverScreen() {
     setSelectedGenre("All");
   };
 
-  // --- Custom Empty State ---
+  // --- Custom Empty State (Handles Offline & Search No-Results) ---
   const renderEmptyState = () => {
     if (loading) return null;
 
+    // 1. OFFLINE / NETWORK ERROR STATE
+    if (error) {
+      return (
+          <View className="empty-state-container mt-12">
+            <View className="empty-icon-badge">
+              <Image
+                  source={icons.film}
+                  className="size-7"
+                  style={{ tintColor: "#f59e0b" }}
+                  resizeMode="contain"
+              />
+            </View>
+            <View className="items-center">
+              <Text className="text-foreground text-lg font-sans-bold text-center">
+                You're Offline
+              </Text>
+              <Text className="text-muted-foreground text-sm font-sans text-center mt-1.5 max-w-[260px]">
+                We couldn't reach Hollywood right now. Luckily, your saved titles
+                are stored locally on your device!
+              </Text>
+            </View>
+            <Pressable
+                onPress={() => router.push("/vault")}
+                className="mt-3 rounded-xl bg-primary px-6 py-3 active:scale-[0.95]"
+            >
+              <Text className="text-foreground font-sans-bold text-sm">
+                Open My Vault (Offline)
+              </Text>
+            </Pressable>
+          </View>
+      );
+    }
+
+    // 2. STANDARD SEARCH NO-RESULTS STATE
     return (
         <View className="empty-state-container mt-12">
           <View className="empty-icon-badge">
@@ -291,14 +332,14 @@ export default function DiscoverScreen() {
                   ListEmptyComponent={renderEmptyState}
                   // --- Infinite Scrolling & Pull-to-Refresh ---
                   onEndReached={handleLoadMore}
-                  onEndReachedThreshold={0.5}
+                  onEndReachedThreshold={0.2}
                   ListFooterComponent={renderFooter}
                   refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={handleRefresh}
-                        tintColor="#4f46e5" // Spinner color on iOS
-                        colors={["#4f46e5"]} // Spinner color on Android
+                        tintColor="#4f46e5"
+                        colors={["#4f46e5"]}
                     />
                   }
                   // ---------------------------------------------

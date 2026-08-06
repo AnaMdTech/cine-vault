@@ -1,5 +1,6 @@
-import { MOCK_VAULT_ITEMS } from "@/constants/data";
-import React, { createContext, useContext, useMemo, useState } from "react";
+// contexts/VaultContext.tsx
+import React, { createContext, useContext, useMemo } from "react";
+import { useVaultStore } from "@/store/useVaultStore";
 
 interface VaultContextValue {
   items: VaultItem[];
@@ -12,63 +13,34 @@ interface VaultContextValue {
 const VaultContext = createContext<VaultContextValue | null>(null);
 
 export const VaultProvider = ({ children }: { children: React.ReactNode }) => {
-  const [items, setItems] = useState<VaultItem[]>(MOCK_VAULT_ITEMS);
+  // 1. Grab permanent state and disk actions directly from Zustand + AsyncStorage!
+  const vaultItems = useVaultStore((state) => state.vaultItems);
+  const addToWishlist = useVaultStore((state) => state.addToWishlist);
+  const removeFromVaultStore = useVaultStore((state) => state.removeFromVault);
+  const markAsSeenStore = useVaultStore((state) => state.markAsSeen);
 
-  const addToVault = (movie: Movie) => {
-    setItems((prev) => {
-      if (prev.some((item) => item.id === movie.id)) {
-        return prev;
-      }
-
-      return [
-        {
-          ...movie,
-          status: "wishlist",
-          addedAt: new Date().toISOString(),
-        },
-        ...prev,
-      ];
-    });
-  };
-
-  const removeFromVault = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const markSeen = (id: string, rating = 5, notes = "") => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              status: "seen",
-              userRating: rating,
-              notes,
-            }
-          : item,
-      ),
-    );
-  };
-
-  const updateItem = (id: string, updates: Partial<VaultItem>) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...updates } : item)),
-    );
-  };
-
+  // 2. Map them to the exact function names your UI screens expect
   const value = useMemo(
-    () => ({
-      items,
-      addToVault,
-      removeFromVault,
-      markSeen,
-      updateItem,
-    }),
-    [items],
+      () => ({
+        items: vaultItems,
+        addToVault: (movie: Movie) => addToWishlist(movie),
+        removeFromVault: (id: string) => removeFromVaultStore(id),
+        markSeen: (id: string, rating = 5, notes = "") =>
+            markAsSeenStore(id, rating, notes),
+        updateItem: (id: string, updates: Partial<VaultItem>) => {
+          // Custom update fallback for notes/ratings
+          useVaultStore.setState((state) => ({
+            vaultItems: state.vaultItems.map((item) =>
+                item.id === id ? { ...item, ...updates } : item
+            ),
+          }));
+        },
+      }),
+      [vaultItems, addToWishlist, removeFromVaultStore, markAsSeenStore]
   );
 
   return (
-    <VaultContext.Provider value={value}>{children}</VaultContext.Provider>
+      <VaultContext.Provider value={value}>{children}</VaultContext.Provider>
   );
 };
 

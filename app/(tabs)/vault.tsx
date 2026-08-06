@@ -1,9 +1,10 @@
 // app/(tabs)/vault.tsx
 import { VaultCard } from "@/components/VaultCard";
-import { MOCK_VAULT_ITEMS } from "@/constants/data";
+import { VaultDetailModal } from "@/components/VaultDetailModal";
 import { icons } from "@/constants/icons";
+import { useVault } from "@/contexts/VaultContext";
 import { useRouter } from "expo-router";
-import { styled } from "nativewind";
+import { styled, useColorScheme } from "nativewind";
 import React, { useMemo, useState } from "react";
 import {
     FlatList,
@@ -26,12 +27,16 @@ const GENRES = ["All", "Romance", "Sci-Fi", "Action", "Drama", "Adventure"];
 
 export default function VaultScreen() {
   const router = useRouter();
+  const { items, markSeen } = useVault();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
 
-  // Local state for testing Wishlist vs Seen switching
-  const [items, setItems] = useState<VaultItem[]>(MOCK_VAULT_ITEMS);
   const [activeTab, setActiveTab] = useState<MediaStatus>("wishlist");
   const [selectedType, setSelectedType] = useState<"all" | MediaType>("all");
   const [selectedGenre, setSelectedGenre] = useState<string>("All");
+  const [selectedVaultItem, setSelectedVaultItem] = useState<VaultItem | null>(
+    null,
+  );
 
   // Calculate live counts for the segmented pill control
   const wishlistCount = useMemo(
@@ -56,13 +61,20 @@ export default function VaultScreen() {
     });
   }, [items, activeTab, selectedType, selectedGenre]);
 
-  // Promote wishlist item to seen when clicking "✓ Mark as Seen"
   const handleToggleSeen = (id: string) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, status: "seen", userRating: 5 } : item,
-      ),
-    );
+    const item = items.find((entry) => entry.id === id);
+
+    if (item) {
+      setSelectedVaultItem(item);
+    }
+  };
+
+  const handleSaveDetails = (rating: number, notes: string) => {
+    if (!selectedVaultItem) return;
+
+    markSeen(selectedVaultItem.id, rating, notes);
+    setActiveTab("seen");
+    setSelectedVaultItem(null);
   };
 
   // Custom Empty State matching Screenshot 1
@@ -98,11 +110,17 @@ export default function VaultScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="vault-screen">
+    <SafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: isDark ? "#09090b" : "#f8fafc" }}
+    >
+      <View
+        className="vault-screen"
+        style={{ backgroundColor: isDark ? "#09090b" : "#f8fafc" }}
+      >
         {/* 1. Header with Title & Total Count Badge */}
         <View className="flex-row items-center gap-3 mb-4">
-          <Text className="screen-title">My Vault</Text>
+          <Text className={`screen-title ${ isDark ? "text-foreground" : "text-foreground-light" }` }>My Vault</Text>
           <View className="rounded-full bg-card border border-border px-3 py-1">
             <Text className="text-muted-foreground font-sans-medium text-xs">
               {totalCount} {totalCount === 1 ? "Title" : "Titles"}
@@ -228,12 +246,19 @@ export default function VaultScreen() {
               item={item}
               onToggleSeen={() => handleToggleSeen(item.id)}
               onPress={() => {
-                console.log("Opened Vault Item:", item.title);
+                setSelectedVaultItem(item);
               }}
             />
           )}
         />
       </View>
+
+      <VaultDetailModal
+        item={selectedVaultItem}
+        visible={!!selectedVaultItem}
+        onClose={() => setSelectedVaultItem(null)}
+        onSave={handleSaveDetails}
+      />
     </SafeAreaView>
   );
 }

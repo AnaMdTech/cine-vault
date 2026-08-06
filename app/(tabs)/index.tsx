@@ -3,7 +3,8 @@ import { MovieCard } from "@/components/MovieCard";
 import { MovieDetailModal } from "@/components/MovieDetailModal";
 import { MOCK_TRENDING_MOVIES } from "@/constants/data";
 import { icons } from "@/constants/icons";
-import { styled } from "nativewind";
+import { useVault } from "@/contexts/VaultContext";
+import { styled, useColorScheme } from "nativewind";
 import React, { useMemo, useState } from "react";
 import {
     FlatList,
@@ -20,15 +21,24 @@ const SafeAreaView = styled(RNSafeAreaView);
 const GENRES = ["All", "Sci-Fi", "Action", "Drama", "Animation", "Adventure"];
 
 export default function DiscoverScreen() {
-  const [savedIds, setSavedIds] = useState<string[]>(["1"]);
+  const { items, addToVault, removeFromVault } = useVault();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
   const [selectedGenre, setSelectedGenre] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   const toggleSave = (id: string) => {
-    setSavedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
+    const alreadySaved = items.some((item) => item.id === id);
+
+    if (alreadySaved) {
+      removeFromVault(id);
+    } else {
+      const movie = MOCK_TRENDING_MOVIES.find((entry) => entry.id === id);
+      if (movie) {
+        addToVault(movie);
+      }
+    }
   };
 
   // Filter mock movies by both Search Query AND Genre Chip
@@ -81,11 +91,17 @@ export default function DiscoverScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="vault-screen">
+    <SafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: isDark ? "#09090b" : "#f8fafc" }}
+    >
+      <View
+        className="vault-screen"
+        style={{ backgroundColor: isDark ? "#09090b" : "#f8fafc" }}
+      >
         {/* 1. Clean Title */}
         <View className="mb-3">
-          <Text className="screen-title">Discover</Text>
+          <Text className={`screen-title ${ isDark ? "text-foreground" : "text-foreground-light" }` }>Discover</Text>
         </View>
 
         {/* 2. Full-Width Search Bar */}
@@ -167,7 +183,7 @@ export default function DiscoverScreen() {
           renderItem={({ item }) => (
             <MovieCard
               movie={item}
-              isSaved={savedIds.includes(item.id)}
+              isSaved={items.some((vaultItem) => vaultItem.id === item.id)}
               onQuickAdd={() => toggleSave(item.id)}
               onPress={() => setSelectedMovie(item)}
             />
@@ -179,7 +195,11 @@ export default function DiscoverScreen() {
       <MovieDetailModal
         movie={selectedMovie}
         visible={!!selectedMovie}
-        isSaved={selectedMovie ? savedIds.includes(selectedMovie.id) : false}
+        isSaved={
+          selectedMovie
+            ? items.some((vaultItem) => vaultItem.id === selectedMovie.id)
+            : false
+        }
         onClose={() => setSelectedMovie(null)}
         onToggleSave={() => {
           if (selectedMovie) {

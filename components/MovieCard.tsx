@@ -1,7 +1,7 @@
-// components/MovieCard.tsx
 import { icons } from "@/constants/icons";
 import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
+import {useColorScheme} from "nativewind";
 
 export const MovieCard = ({
   movie,
@@ -9,6 +9,8 @@ export const MovieCard = ({
   onQuickAdd,
   onPress,
 }: MovieCardProps) => {
+    const { colorScheme } = useColorScheme();
+    const isDark = colorScheme === "dark";
   return (
     <Pressable onPress={onPress} className="discover-card active:opacity-80">
       {/* Poster Image Container */}
@@ -40,7 +42,7 @@ export const MovieCard = ({
       {/* Movie Metadata Below Poster */}
       <View className="px-1">
         <Text
-          className="text-foreground font-sans-semibold text-base leading-tight"
+          className={`font-sans-semibold text-base leading-tight ${ isDark ? "text-foreground" : "text-foreground-light"}`}
           numberOfLines={1}
         >
           {movie.title}

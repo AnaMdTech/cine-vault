@@ -19,6 +19,14 @@
   --color-success: #16a34a; /* Saved to Vault Checkmark */
   --color-destructive: #dc2626; /* Delete Action */
 
+  /* Light-mode fallback tokens for any scheme-aware style components */
+  --color-background-light: #f8fafc;
+  --color-foreground-light: #111827;
+  --color-card-light: #ffffff;
+  --color-muted-light: #e4e4e7;
+  --color-muted-foreground-light: #52525b;
+  --color-surface-light: #e0e7ff;
+
   --spacing-0: 0px;
   --spacing-1: 4px;
   --spacing-2: 8px;
@@ -60,7 +68,7 @@
   }
 
   .screen-title {
-    @apply text-3xl font-sans-extrabold text-foreground;
+    @apply text-3xl font-sans-extrabold font-bold;
   }
 
   /* ==========================================

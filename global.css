@@ -5,176 +5,184 @@
 @import "nativewind/theme";
 
 @theme {
-    /* CineVault Dark-Mode Base Palette */
-    --color-background: #09090b;          /* Pure Zinc-950 Canvas */
-    --color-foreground: #fafafa;          /* Pure White Typography */
-    --color-card: #18181b;                /* Dark Zinc-900 Surfaces */
-    --color-muted: #27272a;               /* Zinc-800 Active/Hover Surfaces */
-    --color-muted-foreground: #a1a1aa;    /* Zinc-400 Subtitles & Metadata */
-    --color-primary: #4f46e5;             /* Brand Indigo-600 */
-    --color-accent: #818cf8;              /* Soft Indigo-400 Highlights */
-    --color-border: #27272a;              /* Subtle Card Borders */
-    --color-rating: #f59e0b;              /* Gold/Amber-500 Star Rating & Crown */
-    --color-surface: #1e1b4b;             /* Dark Indigo-950 Hero Banner Tint */
-    --color-success: #16a34a;             /* Saved to Vault Checkmark */
-    --color-destructive: #dc2626;         /* Delete Action */
+  /* CineVault Dark-Mode Base Palette */
+  --color-background: #09090b; /* Pure Zinc-950 Canvas */
+  --color-foreground: #fafafa; /* Pure White Typography */
+  --color-card: #18181b; /* Dark Zinc-900 Surfaces */
+  --color-muted: #27272a; /* Zinc-800 Active/Hover Surfaces */
+  --color-muted-foreground: #a1a1aa; /* Zinc-400 Subtitles & Metadata */
+  --color-primary: #4f46e5; /* Brand Indigo-600 */
+  --color-accent: #818cf8; /* Soft Indigo-400 Highlights */
+  --color-border: #27272a; /* Subtle Card Borders */
+  --color-rating: #f59e0b; /* Gold/Amber-500 Star Rating & Crown */
+  --color-surface: #1e1b4b; /* Dark Indigo-950 Hero Banner Tint */
+  --color-success: #16a34a; /* Saved to Vault Checkmark */
+  --color-destructive: #dc2626; /* Delete Action */
 
-    --spacing-0: 0px;
-    --spacing-1: 4px;
-    --spacing-2: 8px;
-    --spacing-3: 12px;
-    --spacing-4: 16px;
-    --spacing-5: 20px;
-    --spacing-6: 24px;
-    --spacing-7: 28px;
-    --spacing-8: 32px;
-    --spacing-9: 36px;
-    --spacing-10: 40px;
-    --spacing-11: 44px;
-    --spacing-12: 48px;
-    --spacing-14: 56px;
-    --spacing-16: 64px;
-    --spacing-18: 72px;
-    --spacing-20: 80px;
-    --spacing-24: 96px;
-    --spacing-30: 120px;
+  /* Light-mode fallback tokens for any scheme-aware style components */
+  --color-background-light: #f8fafc;
+  --color-foreground-light: #111827;
+  --color-card-light: #ffffff;
+  --color-muted-light: #e4e4e7;
+  --color-muted-foreground-light: #52525b;
+  --color-surface-light: #e0e7ff;
 
-    --font-sans: sans-regular;
-    --font-sans-light: sans-light;
-    --font-sans-medium: sans-medium;
-    --font-sans-semibold: sans-semibold;
-    --font-sans-bold: sans-bold;
-    --font-sans-extrabold: sans-extrabold;
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-9: 36px;
+  --spacing-10: 40px;
+  --spacing-11: 44px;
+  --spacing-12: 48px;
+  --spacing-14: 56px;
+  --spacing-16: 64px;
+  --spacing-18: 72px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-30: 120px;
+
+  --font-sans: sans-regular;
+  --font-sans-light: sans-light;
+  --font-sans-medium: sans-medium;
+  --font-sans-semibold: sans-semibold;
+  --font-sans-bold: sans-bold;
+  --font-sans-extrabold: sans-extrabold;
 }
 
 @layer components {
-    /* ==========================================
+  /* ==========================================
        1. Root & Header Components
        ========================================== */
-    .vault-screen {
-        @apply flex-1 bg-background px-4 pt-12;
-    }
+  .vault-screen {
+    @apply flex-1 bg-background px-4 pt-12;
+  }
 
-    .screen-header {
-        @apply mb-4 flex-row items-center justify-between;
-    }
+  .screen-header {
+    @apply mb-4 flex-row items-center justify-between;
+  }
 
-    .screen-title {
-        @apply text-3xl font-sans-extrabold text-foreground;
-    }
+  .screen-title {
+    @apply text-3xl font-sans-extrabold font-bold;
+  }
 
-    /* ==========================================
+  /* ==========================================
        2. Floating Navigation Bar (All Tabs)
        ========================================== */
-    .floating-tab-bar {
-        @apply absolute bottom-6 self-center flex-row items-center rounded-3xl border border-border bg-card/95 px-8 py-3.5 gap-12 shadow-lg;
-    }
+  .floating-tab-bar {
+    @apply absolute bottom-6 self-center flex-row items-center rounded-3xl border border-border bg-card/95 px-8 py-3.5 gap-12 shadow-lg;
+  }
 
-    .tabs-icon {
-        @apply size-10 items-center justify-center;
-    }
+  .tabs-icon {
+    @apply size-10 items-center justify-center;
+  }
 
-    .tabs-pill {
-        @apply size-10 items-center justify-center rounded-full bg-transparent;
-    }
+  .tabs-pill {
+    @apply size-10 items-center justify-center rounded-full bg-transparent;
+  }
 
-    .tabs-active {
-        @apply bg-muted;
-    }
+  .tabs-active {
+    @apply bg-muted;
+  }
 
-    .tabs-glyph {
-        @apply size-6;
-    }
+  .tabs-glyph {
+    @apply size-6;
+  }
 
-    /* ==========================================
+  /* ==========================================
        3. Tab 1: Discover Grid & Cards
        ========================================== */
-    .discover-card {
-        @apply relative mb-4 w-42 flex-col gap-2;
-    }
+  .discover-card {
+    @apply relative mb-4 w-42 flex-col gap-2;
+  }
 
-    .discover-poster {
-        @apply h-60 w-full rounded-2xl bg-muted;
-    }
+  .discover-poster {
+    @apply h-60 w-full rounded-2xl bg-muted;
+  }
 
-    .quick-add-badge {
-        @apply absolute right-2.5 top-2.5 size-8 items-center justify-center rounded-full bg-primary shadow-md active:scale-95;
-    }
+  .quick-add-badge {
+    @apply absolute right-2.5 top-2.5 size-8 items-center justify-center rounded-full bg-primary shadow-md active:scale-[0.95];
+  }
 
-    .quick-add-saved {
-        @apply absolute right-2.5 top-2.5 size-8 items-center justify-center rounded-full bg-success shadow-md;
-    }
+  .quick-add-saved {
+    @apply absolute right-2.5 top-2.5 size-8 items-center justify-center rounded-full bg-success shadow-md;
+  }
 
-    /* ==========================================
+  /* ==========================================
        4. Tab 2: Vault Screen & Segmented Control
        ========================================== */
-    .segmented-track {
-        @apply h-12 w-full flex-row items-center gap-1 rounded-2xl border border-border bg-card p-1;
-    }
+  .segmented-track {
+    @apply h-12 w-full flex-row items-center gap-1 rounded-2xl border border-border bg-card p-1;
+  }
 
-    .segmented-item-active {
-        @apply flex-1 h-full items-center justify-center rounded-xl bg-muted;
-    }
+  .segmented-item-active {
+    @apply flex-1 h-full items-center justify-center rounded-xl bg-muted;
+  }
 
-    .segmented-item-inactive {
-        @apply flex-1 h-full items-center justify-center bg-transparent;
-    }
+  .segmented-item-inactive {
+    @apply flex-1 h-full items-center justify-center bg-transparent;
+  }
 
-    .filter-row {
-        @apply my-3 flex-row flex-wrap gap-2;
-    }
+  .filter-row {
+    @apply my-3 flex-row flex-wrap gap-2;
+  }
 
-    .filter-chip {
-        @apply rounded-full border border-border bg-card px-4 py-2;
-    }
+  .filter-chip {
+    @apply rounded-full border border-border bg-card px-4 py-2;
+  }
 
-    .filter-chip-active {
-        @apply border-primary bg-primary;
-    }
+  .filter-chip-active {
+    @apply border-primary bg-primary;
+  }
 
-    .filter-chip-text {
-        @apply text-xs font-sans-medium text-muted-foreground;
-    }
+  .filter-chip-text {
+    @apply text-xs font-sans-medium text-muted-foreground;
+  }
 
-    .filter-chip-text-active {
-        @apply text-xs font-sans-bold text-foreground;
-    }
+  .filter-chip-text-active {
+    @apply text-xs font-sans-bold text-foreground;
+  }
 
-    .vault-card {
-        @apply mb-3 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3;
-    }
+  .vault-card {
+    @apply mb-3 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3;
+  }
 
-    .vault-poster {
-        @apply h-30 w-20 rounded-xl bg-muted;
-    }
+  .vault-poster {
+    @apply h-30 w-20 rounded-xl bg-muted;
+  }
 
-    .mark-seen-btn {
-        @apply mt-2 items-center justify-center rounded-xl bg-primary px-4 py-2 active:scale-95;
-    }
+  .mark-seen-btn {
+    @apply mt-2 items-center justify-center rounded-xl bg-primary px-4 py-2 active:scale-[0.95];
+  }
 
-    /* ==========================================
+  /* ==========================================
        5. Tab 3: Cinema DNA & Analytics
        ========================================== */
-    .hero-stat-banner {
-        @apply my-4 flex-row items-center justify-between rounded-3xl border border-primary/40 bg-surface p-5;
-    }
+  .hero-stat-banner {
+    @apply my-4 flex-row items-center justify-between rounded-3xl border border-primary/40 bg-surface p-5;
+  }
 
-    .podium-grid {
-        @apply my-3 flex-row items-end justify-center gap-3;
-    }
+  .podium-grid {
+    @apply my-3 flex-row items-end justify-center gap-3;
+  }
 
-    .analytics-card {
-        @apply flex-1 rounded-2xl border border-border bg-card p-4;
-    }
+  .analytics-card {
+    @apply flex-1 rounded-2xl border border-border bg-card p-4;
+  }
 
-    /* ==========================================
+  /* ==========================================
        6. Empty Vault State
        ========================================== */
-    .empty-state-container {
-        @apply my-auto items-center justify-center py-20 px-6 gap-5;
-    }
+  .empty-state-container {
+    @apply my-auto items-center justify-center py-20 px-6 gap-5;
+  }
 
-    .empty-icon-badge {
-        @apply size-16 items-center justify-center rounded-full border border-border bg-card;
-    }
+  .empty-icon-badge {
+    @apply size-16 items-center justify-center rounded-full border border-border bg-card;
+  }
 }

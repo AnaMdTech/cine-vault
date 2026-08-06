@@ -1,27 +1,31 @@
 {
   "expo": {
     "name": "CineVault",
-    "slug": "CineVault",
+    "slug": "cine-vault",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/splash-icon.png",
-    "scheme": "CineVault",
-    "userInterfaceStyle": "automatic",
+    "scheme": "cinevault",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#09090b"
+    },
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anamdtech.cinevault"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/splash-icon.png",
-        "backgroundImage": "./assets/images/splash-icon.png",
-        "monochromeImage": "./assets/images/splash-icon.png"
+        "backgroundColor": "#09090b"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "package": "com.anamdtech.cinevault"
     },
     "web": {
+      "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/splash-icon.png"
     },
@@ -33,9 +37,9 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#09090b",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#09090b"
           }
         }
       ]
@@ -43,6 +47,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b9ebc152-1942-4405-96c6-e3db08eb4976"
+      }
     }
   }
 }

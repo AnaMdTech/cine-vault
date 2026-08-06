@@ -12,6 +12,7 @@ import star from "@/assets/icons/star.png";
 import sun from "@/assets/icons/sun.png";
 import bookmark from "@/assets/icons/bookmark.png";
 import film from "@/assets/icons/film.png"
+import play from "@/assets/icons/play.png"
 
 export const icons = {
     clapperboard,
@@ -26,7 +27,8 @@ export const icons = {
     sun,
     share,
     filter,
-    film
+    film,
+    play
 } as const;
 
 export type IconKey = keyof typeof icons;

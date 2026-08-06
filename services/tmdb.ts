@@ -64,11 +64,11 @@ const mapTMDBToMovie = (raw: TMDBMovieRaw): Movie => {
         rating: Number((raw.vote_average || 0).toFixed(1)),
         overview: raw.overview || "No synopsis available for this film.",
         posterUrl,
-        mediaType: "movie", // Required by Movie interface
+        mediaType: "movie",
     };
 };
 
-// 1. Fetch Today's Trending Movies (NOW USING &page=${page})
+// 1. Fetch Today's Trending Movies
 export const fetchTrendingMovies = async (page: number = 1): Promise<Movie[]> => {
     try {
         const response = await fetch(
@@ -87,7 +87,7 @@ export const fetchTrendingMovies = async (page: number = 1): Promise<Movie[]> =>
     }
 };
 
-// 2. Search Movies by Title Query (NOW USING &page=${page})
+// 2. Search Movies by Title Query
 export const searchMovies = async (
     query: string,
     page: number = 1
@@ -109,5 +109,49 @@ export const searchMovies = async (
     } catch (error) {
         console.error("Error searching movies:", error);
         return [];
+    }
+};
+
+// 3. Fetch Full Details (Runtime, Cast, Trailers) - Root Level Export
+export interface TMDBMovieDetails {
+    runtime: number;
+    cast: { id: number; name: string; character: string; profileUrl: string | null }[];
+    trailerKey?: string;
+}
+
+export const fetchMovieDetails = async (movieId: string): Promise<TMDBMovieDetails> => {
+    try {
+        const response = await fetch(
+            `${TMDB_BASE_URL}/movie/${movieId}?api_key=${API_KEY}&append_to_response=credits,videos&language=en-US`
+        );
+
+        if (!response.ok) {
+            throw new Error(`TMDB Details error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const cast =
+            data.credits?.cast?.slice(0, 5).map((actor: any) => ({
+                id: actor.id,
+                name: actor.name,
+                character: actor.character,
+                profileUrl: actor.profile_path
+                    ? `${TMDB_IMAGE_BASE}${actor.profile_path}`
+                    : null,
+            })) || [];
+
+        const trailer = data.videos?.results?.find(
+            (v: any) => v.site === "YouTube" && v.type === "Trailer"
+        );
+
+        return {
+            runtime: data.runtime || 120,
+            cast,
+            trailerKey: trailer ? trailer.key : undefined,
+        };
+    } catch (error) {
+        console.error("Error fetching movie details:", error);
+        return { runtime: 120, cast: [], trailerKey: undefined };
     }
 };

@@ -7,12 +7,6 @@
     "icon": "./assets/images/splash-icon.png",
     "scheme": "cinevault",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#09090b"
-    },
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anamdtech.cinevault"
@@ -42,7 +36,11 @@
             "backgroundColor": "#09090b"
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
